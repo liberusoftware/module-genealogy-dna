@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Liberu\Genealogy\Dna\Models\DnaKit;
 use Liberu\Genealogy\Dna\Models\DnaProvider;
 use Liberu\Genealogy\GenealogyCore\TeamContext;
+use Liberu\Genealogy\People\Models\Person;
 
 final class UpdateDnaKit
 {
@@ -23,10 +24,17 @@ final class UpdateDnaKit
         if (isset($values['consent_status']) && ! in_array($values['consent_status'], DnaKit::CONSENT_STATUSES, true)) {
             throw ValidationException::withMessages(['consent_status' => 'The selected consent status is invalid.']);
         }
-        $this->assertProvider($values['provider_id'] ?? null);
-        if (array_key_exists('name', $values) && trim((string) $values['name']) === '') {
-            throw ValidationException::withMessages(['name' => 'A DNA kit name is required.']);
+        if (isset($values['status']) && ! in_array($values['status'], DnaKit::STATUSES, true)) {
+            throw ValidationException::withMessages(['status' => 'The selected DNA kit status is invalid.']);
         }
+        $this->assertProvider($values['provider_id'] ?? null);
+        if (array_key_exists('name', $values)) {
+            $values['name'] = trim((string) $values['name']);
+            if ($values['name'] === '') {
+                throw ValidationException::withMessages(['name' => 'A DNA kit name is required.']);
+            }
+        }
+        $this->assertPerson($values['person_id'] ?? null, (string) $kit->team_id);
 
         DB::transaction(fn (): bool => $kit->update($values));
 
@@ -41,6 +49,13 @@ final class UpdateDnaKit
         $teamId = app(TeamContext::class)->require();
         if (! DnaProvider::query()->whereKey($providerId)->where('team_id', $teamId)->exists()) {
             throw ValidationException::withMessages(['provider_id' => 'The selected DNA provider is not available in the active team.']);
+        }
+    }
+
+    private function assertPerson(?string $personId, string $teamId): void
+    {
+        if ($personId !== null && ! Person::query()->whereKey($personId)->where('team_id', $teamId)->exists()) {
+            throw ValidationException::withMessages(['person_id' => 'The selected DNA person is not available in the active team.']);
         }
     }
 }
