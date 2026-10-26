@@ -1,15 +1,15 @@
 {
   "name": "liberusoftware/module-genealogy-dna",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "liberu-module",
   "description": "Liberu genealogy-dna module.",
   "license": "MIT",
   "require": {
     "php": "^8.5",
-    "illuminate/database": "^13.0",
-    "illuminate/encryption": "^13.0",
-    "illuminate/filesystem": "^13.0",
-    "illuminate/support": "^13.0",
+    "illuminate/database": "^13.38.0",
+    "illuminate/encryption": "^13.38.0",
+    "illuminate/filesystem": "^13.38.0",
+    "illuminate/support": "^13.38.0",
     "liberusoftware/module-genealogy-core": "^1.0",
     "liberusoftware/module-genealogy-people": "^1.0"
   },
@@ -25,7 +25,7 @@
   },
   "require-dev": {
     "liberusoftware/package-testbench": "^1.5",
-    "pestphp/pest": "^5.0"
+    "pestphp/pest": "^5.3.3"
   },
   "scripts": {
     "test": "pest"
